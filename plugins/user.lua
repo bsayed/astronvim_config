@@ -59,6 +59,16 @@ return {
     name = "catppuccin",
     event = "User AstroFile",
   },
+  {
+    "Pocco81/auto-save.nvim",
+    event = "User AstroFile",
+    config = function()
+      require("auto-save").setup {
+        -- your config goes here
+        -- or just leave it empty :)
+      }
+    end,
+  }
 }
 
 -- TODO: test
