@@ -7,5 +7,7 @@ return {
   { import = "astrocommunity.pack.go" },
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.colorscheme.catppuccin" },
+  { import = "astrocommunity.colorscheme.tokyonight" },
+  { import = "astrocommunity.colorscheme.nightfox" },
   -- { import = "astrocommunity.completion.copilot-lua-cmp" },
 }
