@@ -68,7 +68,7 @@ return {
         -- or just leave it empty :)
       }
     end,
-  }
+  },
 }
 
 -- TODO: test
