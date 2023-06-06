@@ -11,8 +11,6 @@ return {
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.markdown" },
   { import = "astrocommunity.colorscheme.catppuccin" },
-  { import = "astrocommunity.colorscheme.tokyonight" },
-  { import = "astrocommunity.colorscheme.nightfox" },
   { import = "astrocommunity.motion.nvim-surround" },
   -- { import = "astrocommunity.motion.leap-nvim" },
 }
