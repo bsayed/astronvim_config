@@ -74,6 +74,7 @@ return {
           cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
         },
         -- trigger_events = { "InsertLeave", "TextChanged" }, -- vim events that trigger auto-save. See :h events
+        trigger_events = { "InsertLeave" }, -- vim events that trigger auto-save. See :h events
         -- trigger_events = { "BufWinLeave" }, -- vim events that trigger auto-save. See :h events
         -- function that determines whether to save the current buffer or not
         -- return true: if buffer is ok to be saved
@@ -128,6 +129,25 @@ return {
         -- refer to the configuration section below
       }
     end,
+  },
+  {
+    "danymat/neogen",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+    config = true,
+    event = "User AstroFile",
+    version = "*",
+  },
+  {
+    "SmiteshP/nvim-navbuddy",
+    event = "User AstroFile",
+    requires = {
+      "neovim/nvim-lspconfig",
+      "SmiteshP/nvim-navic",
+      "MunifTanjim/nui.nvim",
+      "numToStr/Comment.nvim",         -- Optional
+      "nvim-telescope/telescope.nvim", -- Optional
+    },
+    opts = { lsp = { auto_attach = true } },
   },
 }
 
