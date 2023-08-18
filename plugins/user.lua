@@ -24,9 +24,14 @@ return {
     cmd = { "TodoQuickFix" },
   },
   {
-    "p00f/nvim-ts-rainbow",
+    "HiPhish/rainbow-delimiters.nvim",
+    dependencies = "nvim-treesitter/nvim-treesitter",
     event = "User AstroFile",
   },
+  -- {
+  --   "p00f/nvim-ts-rainbow",
+  --   event = "User AstroFile",
+  -- },
   {
     "nvim-neotest/neotest",
     ft = "go",
@@ -59,48 +64,89 @@ return {
     event = "User AstroFile",
   },
   {
-    "Pocco81/auto-save.nvim",
-    event = "User AstroFile",
+    "https://git.sr.ht/~nedia/auto-save.nvim",
+    event = "BufWinEnter",
     config = function()
       require("auto-save").setup {
-        -- your config goes here
-        -- or just leave it empty :)
-        enabled = true, -- start auto-save when the plugin is loaded (i.e. when your package manager loads it)
-        execution_message = {
-          message = function() -- message to print on save
-            return ("AutoSave: saved at " .. vim.fn.strftime "%H:%M:%S")
-          end,
-          dim = 0.18, -- dim the color of `message`
-          cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
-        },
-        -- trigger_events = { "InsertLeave", "TextChanged" }, -- vim events that trigger auto-save. See :h events
-        trigger_events = { "InsertLeave" }, -- vim events that trigger auto-save. See :h events
-        -- trigger_events = { "BufWinLeave" }, -- vim events that trigger auto-save. See :h events
-        -- function that determines whether to save the current buffer or not
-        -- return true: if buffer is ok to be saved
-        -- return false: if it's not ok to be saved
-        condition = function(buf)
-          local fn = vim.fn
-          local utils = require "auto-save.utils.data"
+        -- The name of the augroup.
+        augroup_name = "AutoSavePlug",
 
-          if fn.getbufvar(buf, "&modifiable") == 1 and utils.not_in(fn.getbufvar(buf, "&filetype"), {}) then
-            return true -- met condition(s), can save
+        -- The events in which to trigger an auto save.
+        -- events = { "InsertLeave", "TextChanged" },
+        events = { "InsertLeave", "BufLeave" },
+
+        -- If you'd prefer to silence the output of `save_fn`.
+        silent = false,
+
+        -- If you'd prefer to write a vim command.
+        save_cmd = nil,
+
+        -- What to do after checking if auto save conditions have been met.
+        save_fn = function()
+          local config = require "auto-save.config"
+          if config.save_cmd ~= nil then
+            vim.cmd(config.save_cmd)
+          -- elseif M.silent then
+          --   vim.cmd "silent! w"
+          else
+            vim.cmd "w"
           end
-          return false -- can't save
         end,
-        write_all_buffers = false, -- write all buffers when the current one meets `condition`
-        debounce_delay = 5000, -- saves the file at most every `debounce_delay` milliseconds
-        callbacks = {
-          -- functions to be executed at different intervals
-          enabling = nil, -- ran when enabling auto-save
-          disabling = nil, -- ran when disabling auto-save
-          before_asserting_save = nil, -- ran before checking `condition`
-          before_saving = nil, -- ran before doing the actual save
-          after_saving = nil, -- ran after doing the actual save
-        },
+
+        -- May define a timeout, or a duration to defer the save for - this allows
+        -- for formatters to run, for example if they're configured via an autocmd
+        -- that listens for `BufWritePre` event.
+        timeout = nil,
+
+        -- Define some filetypes to explicitly not save, in case our existing conditions
+        -- don't quite catch all the buffers we'd prefer not to write to.
+        exclude_ft = { "neo-tree" },
       }
     end,
   },
+  -- {
+  --   "Pocco81/auto-save.nvim",
+  --   event = "User AstroFile",
+  --   config = function()
+  --     require("auto-save").setup {
+  --       -- your config goes here
+  --       -- or just leave it empty :)
+  --       enabled = true, -- start auto-save when the plugin is loaded (i.e. when your package manager loads it)
+  --       execution_message = {
+  --         message = function() -- message to print on save
+  --           return ("AutoSave: saved at " .. vim.fn.strftime "%H:%M:%S")
+  --         end,
+  --         dim = 0.18, -- dim the color of `message`
+  --         cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
+  --       },
+  --       -- trigger_events = { "InsertLeave", "TextChanged" }, -- vim events that trigger auto-save. See :h events
+  --       trigger_events = { "InsertLeave" }, -- vim events that trigger auto-save. See :h events
+  --       -- trigger_events = { "BufWinLeave" }, -- vim events that trigger auto-save. See :h events
+  --       -- function that determines whether to save the current buffer or not
+  --       -- return true: if buffer is ok to be saved
+  --       -- return false: if it's not ok to be saved
+  --       condition = function(buf)
+  --         local fn = vim.fn
+  --         local utils = require "auto-save.utils.data"
+  --
+  --         if fn.getbufvar(buf, "&modifiable") == 1 and utils.not_in(fn.getbufvar(buf, "&filetype"), {}) then
+  --           return true -- met condition(s), can save
+  --         end
+  --         return false -- can't save
+  --       end,
+  --       write_all_buffers = false, -- write all buffers when the current one meets `condition`
+  --       debounce_delay = 5000, -- saves the file at most every `debounce_delay` milliseconds
+  --       callbacks = {
+  --         -- functions to be executed at different intervals
+  --         enabling = nil, -- ran when enabling auto-save
+  --         disabling = nil, -- ran when disabling auto-save
+  --         before_asserting_save = nil, -- ran before checking `condition`
+  --         before_saving = nil, -- ran before doing the actual save
+  --         after_saving = nil, -- ran after doing the actual save
+  --       },
+  --     }
+  --   end,
+  -- },
   {
     "simrat39/symbols-outline.nvim",
     event = "User AstroFile",
@@ -164,6 +210,28 @@ return {
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
     },
+  },
+  {
+    "hrsh7th/nvim-cmp",
+    opts = function(_, opts)
+      local cmp = require "cmp"
+      opts.mapping["<C-Right>"] = cmp.mapping(
+        function(_)
+          vim.api.nvim_feedkeys(
+            vim.fn["copilot#Accept"](vim.api.nvim_replace_termcodes("<Tab>", true, true, true)),
+            "n",
+            true
+          )
+        end
+      )
+      opts.experimental = { ghost_text = false }
+      return opts
+    end,
+  },
+  {
+    "github/copilot.vim",
+    event = "BufRead",
+    config = function() vim.cmd "source ~/.config/nvim/extra_conf.vim" end,
   },
 }
 
