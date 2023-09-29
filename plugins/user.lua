@@ -152,19 +152,20 @@ return {
     event = "User AstroFile",
     config = function() require("symbols-outline").setup() end,
   },
-  {
-    "utilyre/barbecue.nvim",
-    name = "barbecue",
-    version = "*",
-    event = "User AstroFile",
-    dependencies = {
-      "SmiteshP/nvim-navic",
-      "nvim-tree/nvim-web-devicons", -- optional dependency
-    },
-    opts = {
-      -- configurations go here
-    },
-  },
+  -- {
+  --   "utilyre/barbecue.nvim",
+  --   name = "barbecue",
+  --   version = "*",
+  --   event = "User AstroFile",
+  --   dependencies = {
+  --     "SmiteshP/nvim-navic",
+  --     "nvim-tree/nvim-web-devicons", -- optional dependency
+  --   },
+  --   opts = {
+  --     -- configurations go here
+  --     exclude_filetypes = { "netrw", "toggleterm", "NvimTree", "Trouble", "Outline" },
+  --   },
+  -- },
   {
     "folke/trouble.nvim",
     requires = "nvim-tree/nvim-web-devicons",
@@ -184,17 +185,67 @@ return {
     version = "*",
   },
   {
-    "SmiteshP/nvim-navbuddy",
-    event = "User AstroFile",
-    requires = {
+    "simrat39/rust-tools.nvim",
+    ft = "rust",
+    opts = function(_, opts)
+      local util = require "lspconfig/util"
+      opts.server = {
+        cmd = { "rust-analyzer" },
+        on_attach = require("astronvim.utils.lsp").on_attach,
+        capabilities = require("astronvim.utils.lsp").capabilities,
+        root_dir = util.root_pattern "Cargo.toml",
+        settings = {
+          ["rust-analyzer"] = {
+            checkOnSave = {
+              command = "clippy",
+            },
+            cargo = {
+              allFeatures = true,
+            },
+          },
+        },
+      }
+      return opts
+    end,
+    config = function()
+      require("rust-tools").setup {
+        server = {
+          cmd = { "rust-analyzer" },
+          on_attach = require("astronvim.utils.lsp").on_attach,
+          capabilities = require("astronvim.utils.lsp").capabilities,
+          root_dir = require("lspconfig/util").root_pattern "Cargo.toml",
+          settings = {
+            ["rust-analyzer"] = {
+              checkOnSave = {
+                command = "clippy",
+              },
+              cargo = {
+                allFeatures = true,
+              },
+            },
+          },
+        },
+      }
+    end,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-lua/popup.nvim",
       "neovim/nvim-lspconfig",
-      "SmiteshP/nvim-navic",
-      "MunifTanjim/nui.nvim",
-      "numToStr/Comment.nvim", -- Optional
-      "nvim-telescope/telescope.nvim", -- Optional
+      "mfussenegger/nvim-dap",
     },
-    opts = { lsp = { auto_attach = true } },
   },
+  -- {
+  --   "SmiteshP/nvim-navbuddy",
+  --   event = "User AstroFile",
+  --   requires = {
+  --     "neovim/nvim-lspconfig",
+  --     "SmiteshP/nvim-navic",
+  --     "MunifTanjim/nui.nvim",
+  --     "numToStr/Comment.nvim", -- Optional
+  --     "nvim-telescope/telescope.nvim", -- Optional
+  --   },
+  --   opts = { lsp = { auto_attach = true } },
+  -- },
   {
     "chaoren/vim-wordmotion",
     dependencies = "nvim-treesitter/nvim-treesitter",
