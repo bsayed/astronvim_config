@@ -89,7 +89,7 @@ return {
           -- -- elseif M.silent then
           -- --   vim.cmd "silent! w"
           -- else
-          vim.cmd "w"
+          vim.cmd ":w"
           -- end
         end,
 
@@ -152,20 +152,20 @@ return {
     event = "User AstroFile",
     config = function() require("symbols-outline").setup() end,
   },
-  -- {
-  --   "utilyre/barbecue.nvim",
-  --   name = "barbecue",
-  --   version = "*",
-  --   event = "User AstroFile",
-  --   dependencies = {
-  --     "SmiteshP/nvim-navic",
-  --     "nvim-tree/nvim-web-devicons", -- optional dependency
-  --   },
-  --   opts = {
-  --     -- configurations go here
-  --     exclude_filetypes = { "netrw", "toggleterm", "NvimTree", "Trouble", "Outline" },
-  --   },
-  -- },
+  {
+    "utilyre/barbecue.nvim",
+    name = "barbecue",
+    version = "*",
+    event = "User AstroFile",
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons", -- optional dependency
+    },
+    opts = {
+      -- configurations go here
+      exclude_filetypes = { "netrw", "toggleterm", "NvimTree", "Trouble", "Outline" },
+    },
+  },
   {
     "folke/trouble.nvim",
     requires = "nvim-tree/nvim-web-devicons",
@@ -264,25 +264,34 @@ return {
   },
   {
     "hrsh7th/nvim-cmp",
-    opts = function(_, opts)
-      local cmp = require "cmp"
-      opts.mapping["<C-Right>"] = cmp.mapping(
-        function(_)
-          vim.api.nvim_feedkeys(
-            vim.fn["copilot#Accept"](vim.api.nvim_replace_termcodes("<Tab>", true, true, true)),
-            "n",
-            true
-          )
-        end
-      )
-      opts.experimental = { ghost_text = false }
-      return opts
-    end,
+    -- opts = function(_, opts)
+    --   local cmp = require "cmp"
+    --   opts.mapping["<C-Right>"] = cmp.mapping(
+    --     function(_)
+    --       vim.api.nvim_feedkeys(
+    --         vim.fn["copilot#Accept"](vim.api.nvim_replace_termcodes("<Tab>", true, true, true)),
+    --         "n",
+    --         true
+    --       )
+    --     end
+    --   )
+    --   opts.experimental = { ghost_text = false }
+    --   return opts
+    -- end,
   },
   {
     "github/copilot.vim",
+    init = function() vim.g.copilot_no_tab_map = true end,
+    config = function()
+      vim.keymap.set("i", "<C-Right>", [[copilot#Accept("\<CR>")]], {
+        silent = true,
+        expr = true,
+        script = true,
+        replace_keycodes = false,
+      })
+    end, 
     event = "BufRead",
-    config = function() vim.cmd "source ~/.config/nvim/extra_conf.vim" end,
+    -- config = function() vim.cmd "source ~/.config/nvim/extra_conf.vim" end,
   },
 }
 
